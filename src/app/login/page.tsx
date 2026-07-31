@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string; message?: string }> }) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string; message?: string; next?: string; reason?: string }> }) {
   const params = await searchParams;
+  const nextPath = params.next?.startsWith("/") && !params.next.startsWith("//") ? params.next : "/dashboard";
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-10">
@@ -21,6 +22,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             <Alert>
               <AlertTitle>Supabase is not configured</AlertTitle>
               <AlertDescription>Add the Supabase URL and publishable key before signing in.</AlertDescription>
+            </Alert>
+          ) : null}
+          {params.reason === "auth" ? (
+            <Alert className="mb-4 border-amber-400/30 bg-amber-400/10">
+              <AlertTitle>Sign in required</AlertTitle>
+              <AlertDescription>Sign in to continue to your bankroll workspace.</AlertDescription>
             </Alert>
           ) : null}
           {params.error ? (
@@ -44,6 +51,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               <Label htmlFor="password">Password</Label>
               <Input id="password" minLength={6} name="password" required type="password" />
             </div>
+            <input name="next" type="hidden" value={nextPath} />
             <div className="flex gap-2">
               <Button formAction={login} type="submit">
                 Sign in

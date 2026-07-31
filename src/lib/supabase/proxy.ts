@@ -3,6 +3,25 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/types/database.types";
 import { hasSupabaseEnv, getSupabaseEnv } from "./env";
 
+const protectedPaths = [
+  "/",
+  "/analytics",
+  "/bankroll",
+  "/dashboard",
+  "/import",
+  "/planner",
+  "/rules",
+  "/satellites",
+  "/series",
+  "/sessions",
+  "/settings",
+  "/tournaments",
+];
+
+function isProtectedPath(pathname: string) {
+  return protectedPaths.some((path) => pathname === path || (path !== "/" && pathname.startsWith(`${path}/`)));
+}
+
 export async function updateSession(request: NextRequest) {
   if (!hasSupabaseEnv()) {
     return NextResponse.next({ request });
@@ -25,6 +44,15 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  await supabase.auth.getClaims();
+  const { data } = await supabase.auth.getClaims();
+
+  if (!data?.claims && isProtectedPath(request.nextUrl.pathname)) {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = "/login";
+    redirectUrl.searchParams.set("reason", "auth");
+    redirectUrl.searchParams.set("next", `${request.nextUrl.pathname}${request.nextUrl.search}`);
+    return NextResponse.redirect(redirectUrl);
+  }
+
   return supabaseResponse;
 }
