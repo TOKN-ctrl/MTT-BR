@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { logout } from "@/app/login/actions";
 import { Button } from "@/components/ui/button";
+import { isSingleUserMode } from "@/lib/supabase/env";
 
 const nav = [
   { href: "/dashboard", icon: Gauge, label: "Dashboard" },
@@ -31,6 +32,8 @@ const nav = [
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
+  const singleUserMode = isSingleUserMode();
+
   return (
     <div className="min-h-screen">
       <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-border bg-background/90 p-4 lg:block">
@@ -53,11 +56,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Button>
           ))}
         </nav>
-        <form action={logout} className="absolute bottom-4 left-4 right-4">
-          <Button className="w-full justify-start" type="submit" variant="outline">
-            Sign out
-          </Button>
-        </form>
+        {!singleUserMode ? (
+          <form action={logout} className="absolute bottom-4 left-4 right-4">
+            <Button className="w-full justify-start" type="submit" variant="outline">
+              Sign out
+            </Button>
+          </form>
+        ) : null}
       </aside>
       <header className="sticky top-0 z-10 border-b border-border bg-background/90 px-4 py-3 backdrop-blur lg:hidden">
         <div className="flex gap-2 overflow-x-auto">
@@ -69,9 +74,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </Link>
             </Button>
           ))}
-          <Button asChild size="sm" variant="outline">
-            <Link href="/login">Account</Link>
-          </Button>
+          {!singleUserMode ? (
+            <Button asChild size="sm" variant="outline">
+              <Link href="/login">Account</Link>
+            </Button>
+          ) : null}
         </div>
       </header>
       <main className="lg:pl-64">

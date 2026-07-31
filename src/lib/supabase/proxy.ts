@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/types/database.types";
-import { hasSupabaseEnv, getSupabaseEnv } from "./env";
+import { hasSupabaseEnv, getSupabaseEnv, isSingleUserMode } from "./env";
 
 const protectedPaths = [
   "/",
@@ -23,7 +23,7 @@ function isProtectedPath(pathname: string) {
 }
 
 export async function updateSession(request: NextRequest) {
-  if (!hasSupabaseEnv()) {
+  if (!hasSupabaseEnv() || isSingleUserMode()) {
     return NextResponse.next({ request });
   }
 

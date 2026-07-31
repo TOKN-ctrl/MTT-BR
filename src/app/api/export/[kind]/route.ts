@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { hasSupabaseEnv } from "@/lib/supabase/env";
+import { getSingleUserId, hasSupabaseEnv, isSingleUserMode } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 
 const exportTables = {
@@ -24,8 +24,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ kind: stri
   }
 
   const supabase = await createClient();
-  const { data: claimsData } = await supabase.auth.getClaims();
-  const userId = claimsData?.claims?.sub;
+  const userId = isSingleUserMode() ? getSingleUserId() : (await supabase.auth.getClaims()).data?.claims?.sub;
   if (!userId) {
     return NextResponse.json({ error: "Authentication required." }, { status: 401 });
   }

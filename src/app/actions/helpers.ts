@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { hasSupabaseEnv } from "@/lib/supabase/env";
+import { getSingleUserId, hasSupabaseEnv, isSingleUserMode } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 
 export type ActionState = {
@@ -14,6 +14,10 @@ export async function getActionUser() {
   }
 
   const supabase = await createClient();
+  if (isSingleUserMode()) {
+    return { supabase, userId: getSingleUserId() };
+  }
+
   const { data, error } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
 

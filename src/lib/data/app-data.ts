@@ -1,5 +1,5 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { hasSupabaseEnv } from "@/lib/supabase/env";
+import { getSingleUserId, hasSupabaseEnv, isSingleUserMode } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 import type {
   BankrollRulesRow,
@@ -37,8 +37,7 @@ export async function loadAppData(): Promise<AppData> {
   if (!hasSupabaseEnv()) return { baseCurrency: "USD", status: "setup" };
 
   const supabase = await createClient();
-  const { data: claimsData } = await supabase.auth.getClaims();
-  const userId = claimsData?.claims?.sub;
+  const userId = isSingleUserMode() ? getSingleUserId() : (await supabase.auth.getClaims()).data?.claims?.sub;
   if (!userId) return { baseCurrency: "USD", status: "unauthenticated" };
 
   const [profile, rules, transactions, tournaments, entries, results, sessions, series, satellites, tickets] = await Promise.all([

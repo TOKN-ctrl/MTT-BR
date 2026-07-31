@@ -1,12 +1,17 @@
 import { login, signup } from "./actions";
+import { redirect } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { hasSupabaseEnv } from "@/lib/supabase/env";
+import { hasSupabaseEnv, isSingleUserMode } from "@/lib/supabase/env";
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string; message?: string; next?: string; reason?: string }> }) {
+  if (isSingleUserMode()) {
+    redirect("/dashboard");
+  }
+
   const params = await searchParams;
   const nextPath = params.next?.startsWith("/") && !params.next.startsWith("//") ? params.next : "/dashboard";
 
