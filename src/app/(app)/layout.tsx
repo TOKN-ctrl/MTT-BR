@@ -13,6 +13,7 @@ import {
   Trophy,
   WalletCards,
 } from "lucide-react";
+import { logout } from "@/app/login/actions";
 import { Button } from "@/components/ui/button";
 
 const nav = [
@@ -52,6 +53,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Button>
           ))}
         </nav>
+        <form action={logout} className="absolute bottom-4 left-4 right-4">
+          <Button className="w-full justify-start" type="submit" variant="outline">
+            Sign out
+          </Button>
+        </form>
       </aside>
       <header className="sticky top-0 z-10 border-b border-border bg-background/90 px-4 py-3 backdrop-blur lg:hidden">
         <div className="flex gap-2 overflow-x-auto">
@@ -63,6 +69,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </Link>
             </Button>
           ))}
+          <Button asChild size="sm" variant="outline">
+            <Link href="/login">Account</Link>
+          </Button>
         </div>
       </header>
       <main className="lg:pl-64">

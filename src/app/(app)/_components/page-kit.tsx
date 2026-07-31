@@ -35,7 +35,12 @@ export function DataGate({ data }: { data: AppData }) {
       <Alert>
         <LockKeyhole className="mb-2 size-4" />
         <AlertTitle>Sign in required</AlertTitle>
-        <AlertDescription>Authenticated Supabase sessions are required before records can be read or written.</AlertDescription>
+        <AlertDescription>
+          Authenticated Supabase sessions are required before records can be read or written.
+          <Button asChild className="mt-3 block w-fit">
+            <Link href="/login">Sign in</Link>
+          </Button>
+        </AlertDescription>
       </Alert>
     );
   }

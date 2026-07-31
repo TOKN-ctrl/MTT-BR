@@ -1,0 +1,12 @@
+create index if not exists bankroll_rules_user_id_idx on public.bankroll_rules(user_id);
+create index if not exists bankroll_transactions_tournament_id_idx on public.bankroll_transactions(tournament_id);
+create index if not exists bankroll_transactions_entry_id_idx on public.bankroll_transactions(entry_id);
+create index if not exists bankroll_transactions_ticket_id_idx on public.bankroll_transactions(ticket_id);
+create index if not exists csv_imports_user_id_idx on public.csv_imports(user_id);
+create index if not exists satellite_campaigns_user_id_idx on public.satellite_campaigns(user_id);
+create index if not exists satellite_campaigns_target_tournament_id_idx on public.satellite_campaigns(target_tournament_id);
+create index if not exists tickets_campaign_id_idx on public.tickets(campaign_id);
+create index if not exists tickets_source_tournament_id_idx on public.tickets(source_tournament_id);
+create index if not exists tournament_entries_ticket_id_idx on public.tournament_entries(ticket_id);
+create index if not exists tournament_series_user_id_idx on public.tournament_series(user_id);
+create index if not exists tournaments_series_id_idx on public.tournaments(series_id);
