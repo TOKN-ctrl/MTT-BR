@@ -7,10 +7,10 @@ export default async function NewTournamentPage() {
   const data = await loadAppData();
   return (
     <>
-      <PageHeader description="Fast MTT setup with format, speed, starting stack, guarantee, flight, and late-registration details." title="New tournament" />
+      <PageHeader description="Log the tournament details, first buy-in, and optional cash returned. Saving sends you back to the stats dashboard." title="Log tournament" />
       {data.status === "ready" ? (
         <Card>
-          <CardHeader><CardTitle>Tournament details</CardTitle></CardHeader>
+          <CardHeader><CardTitle>Tournament record</CardTitle></CardHeader>
           <CardContent><TournamentForm baseCurrency={data.baseCurrency} /></CardContent>
         </Card>
       ) : (

@@ -7,6 +7,7 @@ import {
   calculateDrawdown,
   calculateItmPercentage,
   calculateSatelliteCampaignRoi,
+  calculateSimpleTournamentStats,
 } from "@/lib/domain/calculations";
 import type { AppData } from "./app-data";
 
@@ -24,6 +25,7 @@ export function buildDashboardSummary(data: Extract<AppData, { status: "ready" }
     finalTablePercentage: data.results.length ? (data.results.filter((result) => result.final_table).length / data.results.length) * 100 : null,
     itmPercentage: calculateItmPercentage(data.results),
     satellite: calculateSatelliteCampaignRoi(data.satellites),
+    simple: calculateSimpleTournamentStats(data.tournaments, data.entries, data.results),
     ...drawdown,
   };
 }

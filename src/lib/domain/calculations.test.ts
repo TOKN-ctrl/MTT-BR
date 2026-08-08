@@ -5,9 +5,11 @@ import {
   calculateBuyInsRemaining,
   calculateCurrentBankroll,
   calculateDrawdown,
+  calculateSimpleTournamentStats,
   calculateSatelliteCampaignRoi,
   calculateTournamentCost,
   calculateTournamentPerformance,
+  buildTournamentProfitSeries,
 } from "./calculations";
 
 describe("bankroll calculations", () => {
@@ -67,6 +69,60 @@ describe("tournament ROI calculations", () => {
 
   it("returns null ROI when cost is zero", () => {
     expect(calculateTournamentPerformance([], { total_cash_returned_base: "100.00" }).roi).toBeNull();
+  });
+
+  it("calculates simple totals across all tournaments", () => {
+    expect(
+      calculateSimpleTournamentStats(
+        [{ id: "t1" }, { id: "t2" }],
+        [
+          { amount_paid_base: "50.00", fee_base: "5.00", add_on_base: "0.00" },
+          { amount_paid_base: "100.00", fee_base: "9.00", add_on_base: "0.00" },
+        ],
+        [{ total_cash_returned_base: "220.00" }],
+      ),
+    ).toEqual({
+      averageBuyIn: "82.00",
+      completedTournaments: 1,
+      roi: 34.14,
+      totalBuyIns: "164.00",
+      totalProfit: "56.00",
+      totalReturned: "220.00",
+      tournaments: 2,
+    });
+  });
+
+  it("builds chronological buy-in and profit chart data", () => {
+    expect(
+      buildTournamentProfitSeries(
+        [
+          { id: "late", name: "Late", starts_at: "2026-01-02T00:00:00Z" },
+          { id: "early", name: "Early", starts_at: "2026-01-01T00:00:00Z" },
+        ],
+        [
+          { tournament_id: "early", amount_paid_base: "50.00", fee_base: "5.00", add_on_base: "0.00" },
+          { tournament_id: "late", amount_paid_base: "100.00", fee_base: "9.00", add_on_base: "0.00" },
+        ],
+        [{ tournament_id: "early", total_cash_returned_base: "110.00" }],
+      ),
+    ).toEqual([
+      {
+        buyIns: "55.00",
+        cumulativeProfit: "55.00",
+        date: "2026-01-01",
+        name: "Early",
+        profit: "55.00",
+        returned: "110.00",
+      },
+      {
+        buyIns: "109.00",
+        cumulativeProfit: "-54.00",
+        date: "2026-01-02",
+        name: "Late",
+        profit: "-109.00",
+        returned: "0.00",
+      },
+    ]);
   });
 });
 

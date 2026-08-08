@@ -1,33 +1,19 @@
 import Link from "next/link";
 import {
-  BarChart3,
-  CalendarDays,
-  ClipboardList,
   Coins,
-  FileUp,
   Gauge,
-  Landmark,
-  ListChecks,
   Settings,
-  ShieldCheck,
   Trophy,
-  WalletCards,
+  PlusCircle,
 } from "lucide-react";
 import { logout } from "@/app/login/actions";
 import { Button } from "@/components/ui/button";
 import { isSingleUserMode } from "@/lib/supabase/env";
 
 const nav = [
-  { href: "/dashboard", icon: Gauge, label: "Dashboard" },
-  { href: "/bankroll", icon: Landmark, label: "Bankroll" },
+  { href: "/dashboard", icon: Gauge, label: "Stats" },
+  { href: "/tournaments/new", icon: PlusCircle, label: "Log tournament" },
   { href: "/tournaments", icon: Trophy, label: "Tournaments" },
-  { href: "/sessions", icon: CalendarDays, label: "Sessions" },
-  { href: "/series", icon: ClipboardList, label: "Series" },
-  { href: "/satellites", icon: WalletCards, label: "Satellites" },
-  { href: "/planner", icon: ListChecks, label: "Planner" },
-  { href: "/analytics", icon: BarChart3, label: "Analytics" },
-  { href: "/rules", icon: ShieldCheck, label: "Rules" },
-  { href: "/import", icon: FileUp, label: "Import" },
   { href: "/settings", icon: Settings, label: "Settings" },
 ];
 
@@ -43,7 +29,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </span>
           <span>
             <span className="block text-sm font-semibold">MTT Bankroll</span>
-            <span className="block text-xs text-muted-foreground">Tournament risk desk</span>
+            <span className="block text-xs text-muted-foreground">Buy-ins and profit</span>
           </span>
         </Link>
         <nav className="space-y-1">

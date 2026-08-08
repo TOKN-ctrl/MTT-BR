@@ -16,6 +16,16 @@ export type TournamentPerformance = {
   averageBullets: number;
 };
 
+export type SimpleTournamentStats = {
+  averageBuyIn: string;
+  completedTournaments: number;
+  roi: number | null;
+  totalBuyIns: string;
+  totalProfit: string;
+  totalReturned: string;
+  tournaments: number;
+};
+
 export function calculateCurrentBankroll(transactions: Pick<BankrollTransactionRow, "amount_base">[]) {
   return addMoney(transactions.map((transaction) => transaction.amount_base));
 }
@@ -114,6 +124,55 @@ export function calculateAggregateRoi(
   const totalCost = calculateTournamentCost(entries);
   const totalReturned = addMoney(results.map((result) => result.total_cash_returned_base));
   return divideToPercent(subtractMoney(totalReturned, totalCost), totalCost);
+}
+
+export function calculateSimpleTournamentStats(
+  tournaments: Pick<TournamentRow, "id">[],
+  entries: Pick<TournamentEntryRow, "amount_paid_base" | "fee_base" | "add_on_base">[],
+  results: Pick<TournamentResultRow, "total_cash_returned_base">[],
+): SimpleTournamentStats {
+  const totalBuyIns = calculateTournamentCost(entries);
+  const totalReturned = addMoney(results.map((result) => result.total_cash_returned_base));
+  const totalProfit = subtractMoney(totalReturned, totalBuyIns);
+
+  return {
+    averageBuyIn: calculateAverageBuyIn(entries, tournaments.length),
+    completedTournaments: results.length,
+    roi: divideToPercent(totalProfit, totalBuyIns),
+    totalBuyIns,
+    totalProfit,
+    totalReturned,
+    tournaments: tournaments.length,
+  };
+}
+
+export function buildTournamentProfitSeries(
+  tournaments: Pick<TournamentRow, "id" | "name" | "starts_at">[],
+  entries: Pick<TournamentEntryRow, "tournament_id" | "amount_paid_base" | "fee_base" | "add_on_base">[],
+  results: Pick<TournamentResultRow, "tournament_id" | "total_cash_returned_base">[],
+) {
+  let cumulativeProfit = 0n;
+
+  return tournaments
+    .slice()
+    .sort((left, right) => left.starts_at.localeCompare(right.starts_at))
+    .map((tournament) => {
+      const tournamentEntries = entries.filter((entry) => entry.tournament_id === tournament.id);
+      const result = results.find((item) => item.tournament_id === tournament.id);
+      const buyIns = calculateTournamentCost(tournamentEntries);
+      const returned = result?.total_cash_returned_base ?? "0.00";
+      const profit = subtractMoney(returned, buyIns);
+      cumulativeProfit += toUnits(profit);
+
+      return {
+        buyIns,
+        cumulativeProfit: fromUnits(cumulativeProfit),
+        date: tournament.starts_at.slice(0, 10),
+        name: tournament.name,
+        profit,
+        returned,
+      };
+    });
 }
 
 export function calculateSatelliteCampaignRoi(campaigns: Pick<SatelliteCampaignRow, "total_spend_base" | "realized_value_base">[]) {

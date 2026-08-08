@@ -8,13 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { tournamentFormats, tournamentSchema, tournamentSpeeds } from "@/lib/validation/schemas";
+import { simpleTournamentLogSchema, tournamentFormats, tournamentSpeeds } from "@/lib/validation/schemas";
 import { ActionMessage, Field } from "./form-parts";
 
 export function TournamentForm({ baseCurrency = "USD" }: { baseCurrency?: string }) {
   const [state, action, pending] = useActionState(createTournament, {});
   const form = useForm({
-    resolver: zodResolver(tournamentSchema),
+    resolver: zodResolver(simpleTournamentLogSchema),
     defaultValues: {
       base_buy_in: "",
       currency: baseCurrency,
@@ -23,6 +23,7 @@ export function TournamentForm({ baseCurrency = "USD" }: { baseCurrency?: string
       flight: "",
       format: "freezeout" as const,
       guarantee: "",
+      finishing_position: "",
       late_registration_open: false,
       location_type: "online" as const,
       name: "",
@@ -32,6 +33,7 @@ export function TournamentForm({ baseCurrency = "USD" }: { baseCurrency?: string
       starting_big_blinds: "",
       starting_stack: "",
       starts_at: new Date().toISOString().slice(0, 16),
+      total_cash_returned: "",
     },
   });
 
@@ -80,6 +82,12 @@ export function TournamentForm({ baseCurrency = "USD" }: { baseCurrency?: string
       <Field error={form.formState.errors.currency} label="Currency" name="currency">
         <Input id="currency" maxLength={3} {...form.register("currency")} />
       </Field>
+      <Field error={form.formState.errors.total_cash_returned} label="Cash returned" name="total_cash_returned">
+        <Input id="total_cash_returned" inputMode="decimal" placeholder="Leave blank until finished" {...form.register("total_cash_returned")} />
+      </Field>
+      <Field error={form.formState.errors.finishing_position} label="Finish position" name="finishing_position">
+        <Input id="finishing_position" inputMode="numeric" placeholder="Optional" {...form.register("finishing_position")} />
+      </Field>
       <Field error={form.formState.errors.guarantee} label="Guarantee" name="guarantee">
         <Input id="guarantee" inputMode="decimal" {...form.register("guarantee")} />
       </Field>
@@ -106,7 +114,7 @@ export function TournamentForm({ baseCurrency = "USD" }: { baseCurrency?: string
       </div>
       <div className="md:col-span-3">
         <Button disabled={pending} type="submit">
-          Create tournament
+          Save tournament and view stats
         </Button>
       </div>
     </form>

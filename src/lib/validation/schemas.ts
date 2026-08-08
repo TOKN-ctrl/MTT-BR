@@ -61,6 +61,11 @@ export const tournamentSchema = z.object({
   starts_at: z.string().min(1),
 });
 
+export const simpleTournamentLogSchema = tournamentSchema.extend({
+  finishing_position: z.coerce.number().int().positive().optional().or(z.literal("").transform(() => undefined)),
+  total_cash_returned: moneySchema.optional().or(z.literal("").transform(() => undefined)),
+});
+
 export const entrySchema = z.object({
   add_on: moneySchema.default("0.00"),
   add_on_base: moneySchema.default("0.00"),
